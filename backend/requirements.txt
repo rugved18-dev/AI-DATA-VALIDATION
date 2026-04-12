@@ -1,0 +1,24 @@
+# Flask Backend Dependencies for Multi-Domain AI Data Validation System
+
+# Core Framework
+Flask==2.3.3
+Flask-CORS==4.0.0
+Werkzeug==2.3.7
+
+# Production WSGI Server (for deployment)
+gunicorn==21.2.0
+
+# Data Processing
+# (CSV is built-in to Python, no additional dependency needed)
+
+# Utilities
+python-dotenv==1.0.0  # For environment variable management
+
+# Optional: Database Integration (future)
+# PyMySQL==1.1.0  # For MySQL
+# psycopg2==2.9.7  # For PostgreSQL
+# cx_Oracle==8.3.0  # For Oracle DB2
+
+# Optional: Message Queue Integration (future - for COBOL mainframe)
+# pika==1.3.1  # For RabbitMQ
+# celery==5.3.1  # For task queue
