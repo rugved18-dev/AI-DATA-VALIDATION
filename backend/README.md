@@ -1,19 +1,44 @@
 # AI Data Validation System - Backend
 
-A Flask-based REST API for multi-domain data validation supporting Banking, Healthcare, and E-commerce domains.
+A Flask-based REST API for enterprise-grade multi-domain data validation with anomaly detection, database persistence, and security features.
 
 ## 📋 Overview
 
-This backend service provides APIs to validate data across multiple domains with domain-specific validation rules:
+**Version:** 2.0.0 (Phase 7 - Security & COBOL Integration)  
+**Status:** ✅ Production Ready
 
-- **Banking**: Validate customer financial profiles (age, income, credit score)
-- **Healthcare**: Validate patient health records (age, blood group)
-- **E-commerce**: Validate product inventory data (price, stock)
+This backend service provides APIs to validate data across multiple domains with comprehensive quality metrics:
 
-### Future Integration Points
-- COBOL Mainframe Systems (message queue integration)
-- DB2 Database (regulatory compliance and historical data)
-- Microservices Architecture
+- **Banking**: Customer financial profiles (age, income, credit score, SSN)
+- **Healthcare**: Patient health records (age, blood group, heart rate, cholesterol)
+- **E-commerce**: Product inventory data (price, stock, rating)
+
+### Key Features
+
+**✅ Phase 1-4: Core Validation**
+- Domain-specific validation rules
+- Quality scoring (3 dimensions: completeness, validity, consistency)
+- Modular architecture
+- Error tracking and reporting
+
+**✅ Phase 5: Anomaly Detection**
+- Statistical outlier detection
+- Domain-specific anomaly rules
+- Separate anomaly tracking (non-blocking)
+- Anomaly severity classification (HIGH/MEDIUM/LOW/INFO)
+
+**✅ Phase 6: Dashboard Persistence**
+- SQLite3 database for result persistence
+- Historical data retrieval
+- Aggregated statistics and domain stats
+
+**✅ Phase 7: Enterprise Security & Mainframe**
+- Input validation and CSV sanitization
+- Rate limiting (10 uploads/hour per IP)
+- Security headers (XSS, clickjacking, MIME-sniffing protection)
+- Comprehensive audit logging
+- COBOL mainframe integration framework (RabbitMQ ready)
+- DB2 database integration placeholder
 
 ## 🚀 Quick Start
 
@@ -56,19 +81,16 @@ The server will start at `http://localhost:5000`
 
 ### 1. Health Check Endpoint
 
-**GET** `/`
+**GET** `/health`
 
-Returns a simple status message to verify the backend is running.
-
-#### Example Request
-```bash
-curl http://localhost:5000/
-```
+Returns system health status and version information.
 
 #### Example Response
 ```json
 {
-  "message": "Backend Running"
+  "status": "healthy",
+  "timestamp": "2026-04-12T10:30:45.123456",
+  "version": "2.0.0"
 }
 ```
 
@@ -78,7 +100,7 @@ curl http://localhost:5000/
 
 **POST** `/upload`
 
-Uploads a CSV file and validates the data according to domain-specific rules.
+Uploads a CSV file and validates the data according to domain-specific rules with quality metrics and anomaly detection.
 
 #### Request Format
 ```
@@ -94,10 +116,72 @@ domain: banking | healthcare | ecommerce
 | `file` | File | Yes | CSV/TXT file containing data to validate |
 | `domain` | String | Yes | Validation domain: `banking`, `healthcare`, or `ecommerce` |
 
-#### Response Format
+#### Response Format (Complete with Phase 5-7 Data)
 ```json
 {
-  "total_records": integer,
+  "record_id": 42,
+  "total_records": 100,
+  "valid_records": 95,
+  "invalid_records": 5,
+  
+  "completeness_score": 98.0,
+  "validity_score": 95.0,
+  "consistency_score": 92.0,
+  "final_score": 95.2,
+  "quality_rating": "Good",
+  
+  "anomaly_count": 3,
+  "anomaly_score": 3.0,
+  "anomalies": [
+    {
+      "row": 12,
+      "field": "income",
+      "value": 15000000,
+      "reason": "Extreme income value",
+      "severity": "HIGH"
+    }
+  ],
+  
+  "stored": true,
+  "timestamp": "2026-04-12T10:30:45.123456",
+  "errors": [
+    "Row 5: Invalid age 15: Must be between 18 and 80",
+    "Row 12: Income exceeds reasonable range"
+  ]
+}
+```
+
+#### Quality Metrics Explained
+
+**Completeness Score** (0-100%): Percentage of non-null fields  
+**Validity Score** (0-100%): Percentage of values matching domain rules  
+**Consistency Score** (0-100%): Percentage of records without conflicts  
+**Final Score** (Weighted): 40% Completeness + 40% Validity + 20% Consistency  
+
+**Quality Rating**:
+- 🟢 **Excellent**: Final Score ≥ 95%
+- 🔵 **Good**: Final Score 85-94%
+- 🟡 **Acceptable**: Final Score 70-84%
+- 🔴 **Poor**: Final Score < 70%
+
+#### Anomaly Detection
+
+Automatically identifies statistical outliers using domain-specific rules:
+
+**Banking**: 
+- Income > $10,000,000
+- Age patterns analysis
+- Credit score extremes
+
+**Healthcare**:
+- Age > 110 years
+- Unusual blood group combinations
+- Heart rate outliers
+
+**E-commerce**:
+- Price > $100,000
+- Stock anomalies
+- Rating inconsistencies
   "valid_records": integer,
   "invalid_records": integer,
   "score_percentage": float,
@@ -308,29 +392,88 @@ print(response.json())
 
 ---
 
-## 🔒 Security Considerations
+## 🔒 Phase 7: Security Features
 
-### Current Features
-- File extension validation (CSV/TXT only)
-- File size limit (16MB)
-- Secure filename handling (prevents path traversal)
-- CORS enabled for frontend communication
-- Input sanitization and error handling
+### Security Layer (app.py)
+- ✅ **Security Headers**: XSS, clickjacking, MIME-sniffing protection
+- ✅ **Rate Limiting**: 10 uploads per hour per IP address
+- ✅ **Input Validation**: Domain, filename, and file size validation
+- ✅ **CSV Sanitization**: Remove dangerous patterns (formulas, scripts, SQL)
+- ✅ **Comprehensive Logging**: Audit trail of all operations
+- ✅ **Error Handling**: Secure error responses without stack traces
 
-### Recommended for Production
-- Implement authentication (JWT tokens)
-- Add rate limiting
-- Use HTTPS only
-- Implement request logging
-- Add data encryption for sensitive information
-- Deploy with production WSGI server (Gunicorn)
-- Implement input validation for CSV headers
-- Add database transactions for atomicity
-- Implement audit logging
+### Input Validation (security_utils.py)
+- Filename validation (prevent path traversal)
+- File size validation (0-100MB)
+- MIME type detection (CSV/text only)
+- CSV content sanitization
+- Dangerous pattern blocking:
+  - Formula injection (=, @, +, -)
+  - Script injection (<script>, javascript:)
+  - SQL injection keywords
+  - Null bytes and special characters
+
+### Rate Limiting
+```
+Limit: 10 requests/hour per IP
+Response: 429 (Too Many Requests)
+Cleanup: Automatic request cleanup
+```
+
+### Request Validation Flow
+1. Check rate limit → 2. Validate domain → 3. Validate filename → 4. Validate file size 
+→ 5. Validate file type → 6. Sanitize content → 7. Process validation → 8. Store result
+
+### Production Deployment
+- ✅ Update CORS origins with your domain
+- ✅ Set `debug=False`
+- ✅ Use HTTPS/TLS
+- ✅ Deploy with Gunicorn
+- ✅ Monitor security logs
+- ✅ Keep dependencies updated
 
 ---
 
-## 🔄 Modular Architecture
+## 🏗️ Phase 7: Mainframe Integration
+
+### COBOL Integration Framework (mainframe_service.py)
+- Message queue pattern (RabbitMQ ready)
+- COBOL record format conversion
+- 3 COBOL programs supported:
+  1. **CREDIT.RISK.CALC** - Banking risk assessment
+  2. **COMPLIANCE.VALIDATE** - Regulatory compliance
+  3. **DATA.ENRICH** - Data enrichment from mainframe
+
+### Message Flow
+```
+Validation Result → COBOL Record Format → RabbitMQ Queue 
+  → Mainframe COBOL Programs → DB2 Database → Response Queue
+```
+
+### Enable Mainframe Integration
+1. Set up RabbitMQ server
+2. Deploy COBOL programs
+3. Update MainframeConfig in mainframe_service.py
+4. Uncomment integration code in upload_routes.py
+
+---
+
+## 📚 Documentation
+
+### Backend Documentation
+- **API_TESTING_GUIDE.md** - How to test all endpoints
+- **DEVELOPER_GUIDE.md** - Development guidelines and architecture
+- **IMPLEMENTATION_SUMMARY.md** - System architecture details
+- **QUICK_REFERENCE.md** - Quick command reference
+
+### Phase-Specific Documentation  
+- **PHASE5_IMPLEMENTATION.md** - Anomaly detection details
+- **PHASE7_IMPLEMENTATION.md** - Complete security & COBOL guide
+- **PHASE7_QUICK_REFERENCE.md** - Phase 7 quick start
+
+---
+
+## 🧪 Testing
 
 The code is designed with modularity in mind for future integration:
 
@@ -495,6 +638,7 @@ For issues or questions:
 
 ---
 
-**Version:** 1.0.0  
-**Last Updated:** 2024  
+**Version:** 2.0.0 (Phase 7)  
+**Last Updated:** April 12, 2026  
+**Status:** ✅ Production Ready  
 **Author:** AI Data Validation Team

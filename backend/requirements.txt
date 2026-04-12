@@ -11,14 +11,27 @@ gunicorn==21.2.0
 # Data Processing
 # (CSV is built-in to Python, no additional dependency needed)
 
+# Database Integration (SQLite built-in, optional external DB support)
+# SQLite3 is built-in to Python - no installation required
+PyMySQL==1.1.0           # For MySQL database support (PHASE 3)
+psycopg2-binary==2.9.7   # For PostgreSQL support (PHASE 3)
+
 # Utilities
 python-dotenv==1.0.0  # For environment variable management
 
-# Optional: Database Integration (future)
-# PyMySQL==1.1.0  # For MySQL
-# psycopg2==2.9.7  # For PostgreSQL
-# cx_Oracle==8.3.0  # For Oracle DB2
+# Optional: Database ORM (for future advanced queries)
+# SQLAlchemy==2.0.20   # For advanced ORM queries
+# alembic==1.12.0      # For database migrations
 
 # Optional: Message Queue Integration (future - for COBOL mainframe)
-# pika==1.3.1  # For RabbitMQ
-# celery==5.3.1  # For task queue
+# pika==1.3.1          # For RabbitMQ
+# celery==5.3.1        # For task queue
+
+# Optional: API Documentation
+# Flask-Swagger==0.2.14   # For Swagger/OpenAPI documentation
+
+# Development/Testing (optional)
+# pytest==7.4.0           # For unit testing
+# pytest-cov==4.1.0       # For code coverage
+# black==23.9.1           # For code formatting
+

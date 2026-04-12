@@ -1,83 +1,122 @@
 # Developer Guide - AI Data Validation System
 
-Comprehensive guide for developers to understand, extend, and maintain the backend system.
+Comprehensive guide for developers to understand, extend, and maintain the system through all phases.
+
+**Version:** 2.0.0 (Phase 7 - Security & COBOL Integration)  
+**Status:** ✅ Production Ready
 
 ## 📚 Table of Contents
 
-1. [Architecture Overview](#architecture-overview)
-2. [Code Structure](#code-structure)
-3. [How It Works](#how-it-works)
-4. [Adding New Domains](#adding-new-domains)
-5. [Database Integration](#database-integration)
-6. [COBOL Integration](#cobol-integration)
-7. [API Modifications](#api-modifications)
-8. [Error Handling](#error-handling)
-9. [Testing Guidelines](#testing-guidelines)
-10. [Performance Optimization](#performance-optimization)
+1. [Quick Phase Overview](#quick-phase-overview)
+2. [Architecture Overview](#architecture-overview)
+3. [Code Structure](#code-structure)
+4. [How It Works](#how-it-works)
+5. [Phase 5: Anomaly Detection](#phase-5-anomaly-detection)
+6. [Phase 6: Frontend Dashboard](#phase-6-frontend-dashboard)
+7. [Phase 7: Security & COBOL](#phase-7-security--cobol)
+8. [Adding New Domains](#adding-new-domains)
+9. [Database Integration](#database-integration)
+10. [API Modifications](#api-modifications)
+11. [Testing Guidelines](#testing-guidelines)
+12. [Performance Optimization](#performance-optimization)
+
+---
+
+## Quick Phase Overview
+
+| Phase | Feature | Status |
+|-------|---------|--------|
+| 1-4 | Core validation, domain validators | ✅ Complete |
+| 5 | Anomaly detection, quality scoring | ✅ Complete |
+| 6 | Dashboard, React frontend, Recharts | ✅ Complete |
+| 7 | Security, rate limiting, COBOL | ✅ Complete |
 
 ---
 
 ## Architecture Overview
 
-### High-Level Design
+### High-Level Design (All Phases)
 
 ```
-┌─────────────┐       ┌────────────────┐       ┌─────────────────┐
-│   Frontend  │───→   │  Flask Backend │───→   │  File System    │
-│   (React)   │       │   (Python)     │       │  & Validation   │
-└─────────────┘       └────────────────┘       └─────────────────┘
-                             │
-                             ├→ Domain Validators
-                             │  ├─ Banking
-                             │  ├─ Healthcare
-                             │  └─ E-commerce
-                             │
-                             └→ Future: Database & COBOL
+┌─────────────────────────────────────────────┐
+│  FRONTEND (Phase 6: React + Recharts)      │
+│  - 6 Components (Domain, Upload, Cards...) │
+│  - Interactive dashboard with charts       │
+└────────────┬────────────────────────────────┘
+             │
+    HTTP/CORS (Phase 7: Secured)
+    ├─ Security Headers
+    ├─ Rate Limiting
+    ├─ Input Validation
+    └─ Comprehensive Logging
+             │
+┌────────────▼────────────────────────────────┐
+│  BACKEND (Phase 1-7: Flask + Services)     │
+│  ├─ Validation Service (Phase 1-4)         │
+│  ├─ Anomaly Detection (Phase 5)            │
+│  ├─ Security Utils (Phase 7)               │
+│  ├─ Mainframe Service (Phase 7)            │
+│  └─ Database Service (Phase 3)             │
+└────────────┬────────────────────────────────┘
+             │
+        ┌────┴────────────┐
+        │                 │
+    SQLite3          Optional:
+    Database         ├─ RabbitMQ
+    (Phase 3)        ├─ COBOL
+                     └─ DB2
 ```
 
-### Key Components
+### Data Flow (All Phases Combined)
 
-1. **API Layer**: Flask routes for HTTP communication
-2. **Validation Layer**: Domain-specific validation functions
-3. **Data Model**: `ValidationResult` class for consistency
-4. **File Handling**: Secure file upload and processing
-5. **Error Management**: Comprehensive error handling and reporting
+```
+User Input → Rate Limit Check → Input Validation → CSV Sanitization 
+  → Domain Validation → Quality Scoring → Anomaly Detection 
+  → Database Storage → Optional: Mainframe Processing 
+  → API Response → Dashboard Display
+```
 
 ---
 
 ## Code Structure
 
-### Main Files
+### Main Backend Files
 
 ```
 backend/
-├── app.py                    # Main application file
-├── requirements.txt          # Python dependencies
-├── .env.example              # Environment configuration template
-├── .gitignore                # Git ignore patterns
-├── start.bat                 # Windows quick start script
-├── start.sh                  # Unix/Linux quick start script
-├── README.md                 # User documentation
-├── API_TESTING_GUIDE.md      # Testing documentation
-├── DEVELOPER_GUIDE.md        # This file
-├── sample_banking.csv        # Sample banking data
-├── sample_healthcare.csv     # Sample healthcare data
-├── sample_ecommerce.csv      # Sample e-commerce data
-├── uploads/                  # Directory for uploaded files
-└── venv/                     # Python virtual environment
+├── app.py                           # Main Flask app (Phase 7 enhanced)
+│   ├── Security headers
+│   ├── Rate limiting
+│   ├── Request/response logging
+│   └── Error handlers
+│
+├── models/
+│   └── validation_result.py        # Core data model (Phase 5 enhanced)
+│       ├── Anomaly fields
+│       ├── Quality scores
+│       ├── Anomalies list
+│       └── to_dict() for API
+│
+├── services/
+│   ├── validation_service.py       # Domain validators (Phase 1-4)
+│   ├── anomaly_detection.py        # Phase 5 outlier detection
+│   ├── database_service.py         # Phase 3 SQLite integration
+│   ├── security_utils.py           # Phase 7 validation tools
+│   ├── mainframe_service.py        # Phase 7 COBOL integration
+│   ├── file_service.py             # File handling
+│   └── scoring_service.py          # Quality calculations
+│
+└── routes/
+    └── upload_routes.py            # API endpoints (Phase 7 enhanced)
+        ├── Phase 7: Security checks
+        ├── Phase 5: Anomaly response
+        ├── Phase 3: Database storage
+        └── Phase 6: Mainframe ready
 ```
 
-### Code Sections in app.py
+---
 
-```
-1. Module Imports (line 1-20)
-   └─ Flask, CORS, OS, CSV, Werkzeug, DateTime
-
-2. Flask App Initialization (line 22-29)
-   └─ Create Flask app and enable CORS
-
-3. Configuration (line 31-43)
-   └─ Upload folder, file extensions, size limits
+## How It Works
 
 4. Utility Functions (line 45-60)
    └─ allowed_file(): Check file extensions
