@@ -6,6 +6,7 @@ import DashboardCards from './components/DashboardCards';
 import DataQualityChart from './components/DataQualityChart';
 import ErrorTable from './components/ErrorTable';
 import AnomalyList from './components/AnomalyList';
+import MainframeStatus from './components/MainframeStatus';
 
 function App() {
   const [selectedDomain, setSelectedDomain] = useState('banking');
@@ -62,6 +63,9 @@ function App() {
           <div className="results-section">
             {/* Dashboard Cards */}
             <DashboardCards result={validationResult} />
+
+            {/* Mainframe Integration Status */}
+            <MainframeStatus mainframeProcessing={validationResult.mainframe_processing} />
 
             {/* Data Quality Charts */}
             <DataQualityChart result={validationResult} />

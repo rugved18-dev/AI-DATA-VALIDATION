@@ -608,6 +608,314 @@ body {
   font-size: 0.95rem;
 }
 
+/* ========== MAINFRAME STATUS SECTION ========== */
+.mainframe-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.mainframe-section h2 {
+  color: #333;
+  margin-bottom: 25px;
+  font-size: 1.5rem;
+}
+
+.mainframe-card {
+  border-radius: 10px;
+  padding: 25px;
+  background: #f9fafb;
+  border-left: 5px solid;
+  transition: all 0.3s ease;
+}
+
+/* Success State */
+.mainframe-card.mainframe-success {
+  border-left-color: #10B981;
+  background: linear-gradient(135deg, #f0fdf4 0%, #f0fdf4 100%);
+}
+
+/* Warning State */
+.mainframe-card.mainframe-warning {
+  border-left-color: #F59E0B;
+  background: linear-gradient(135deg, #fffbf0 0%, #fffbf0 100%);
+}
+
+/* Error State */
+.mainframe-card.mainframe-error {
+  border-left-color: #EF4444;
+  background: linear-gradient(135deg, #fef2f2 0%, #fef2f2 100%);
+}
+
+/* Info State */
+.mainframe-card.mainframe-info {
+  border-left-color: #3B82F6;
+  background: linear-gradient(135deg, #f0f9ff 0%, #f0f9ff 100%);
+}
+
+/* Disabled State */
+.mainframe-card.mainframe-disabled {
+  border-left-color: #9CA3AF;
+  background: linear-gradient(135deg, #f3f4f6 0%, #f3f4f6 100%);
+}
+
+.mainframe-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.mainframe-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  min-width: 50px;
+}
+
+.mainframe-header-content {
+  flex: 1;
+}
+
+.mainframe-status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.mainframe-status-badge.success {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.mainframe-status-badge.warning {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.mainframe-status-badge.error {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.mainframe-status-badge.info {
+  background: #DBEAFE;
+  color: #0C2D6B;
+}
+
+.mainframe-status-badge.disabled {
+  background: #E5E7EB;
+  color: #374151;
+}
+
+.mainframe-message {
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.mainframe-note {
+  color: #666;
+  font-size: 0.95rem;
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  border-left: 3px solid currentColor;
+}
+
+/* Metrics Section */
+.mainframe-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.mainframe-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric-label {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.metric-value.valid {
+  color: #10B981;
+}
+
+.metric-value.invalid {
+  color: #EF4444;
+}
+
+/* Details Section */
+.mainframe-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-label {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+code.detail-value {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+
+/* Progress Bar */
+.mainframe-progress {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+}
+
+.progress-label {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-bar-container {
+  height: 25px;
+  background: #E5E7EB;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.progress-bar-valid {
+  background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: width 0.5s ease;
+}
+
+.progress-legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-item::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: block;
+}
+
+.legend-item.valid-item::before {
+  background: #10B981;
+}
+
+.legend-item.invalid-item::before {
+  background: #EF4444;
+}
+
+/* Errors Section */
+.mainframe-errors {
+  margin-top: 20px;
+  padding: 15px;
+  background: #FEF2F2;
+  border-radius: 8px;
+  border-left: 4px solid #EF4444;
+}
+
+.errors-title {
+  color: #991B1B;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.errors-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.error-item {
+  color: #7F1D1D;
+  font-size: 0.9rem;
+  padding: 8px 0;
+  padding-left: 20px;
+  position: relative;
+}
+
+.error-item::before {
+  content: '⚠️';
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
   .App-header h1 {
@@ -641,6 +949,33 @@ body {
   .error-table th,
   .error-table td {
     padding: 10px;
+  }
+
+  /* Mainframe responsive */
+  .mainframe-section {
+    padding: 20px;
+  }
+
+  .mainframe-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .mainframe-icon {
+    font-size: 2rem;
+  }
+
+  .mainframe-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mainframe-details {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-legend {
+    flex-direction: column;
+    gap: 10px;
   }
 }
 

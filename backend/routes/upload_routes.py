@@ -14,6 +14,7 @@ from services.database_service import (
     export_validation_data,
     get_database_stats
 )
+from services.mainframe_integration import MainframeValidationService
 
 logger = logging.getLogger(__name__)
 
@@ -65,8 +66,24 @@ def register_routes(app):
 
             logger.info(f"File saved: {file_path}")
 
-            # ---- Validate data ----
+            # ---- Validate data (Python validation) ----
             result = validate_data(file_path, domain)
+
+            # ---- Call mainframe validation ----
+            mainframe_result = None
+            mainframe_error = None
+            try:
+                logger.info(f"Initiating mainframe validation for domain: {domain}")
+                mainframe_service = MainframeValidationService()
+                mainframe_result = mainframe_service.run_mainframe_validation(
+                    file_path, 
+                    domain
+                )
+                logger.info(f"Mainframe validation completed with status: {mainframe_result.get('status')}")
+            except Exception as e:
+                # Log error but don't fail the API call
+                mainframe_error = str(e)
+                logger.warning(f"Mainframe validation failed (non-blocking): {mainframe_error}")
 
             # ---- Store in DB ----
             record_id = store_validation_result(result, domain, file.filename)
@@ -77,6 +94,17 @@ def register_routes(app):
             response_data['record_id'] = record_id
             response_data['stored'] = stored
             response_data['timestamp'] = datetime.now().isoformat()
+            
+            # ---- Add mainframe processing result ----
+            response_data['mainframe_processing'] = {
+                'attempted': True,
+                'result': mainframe_result,
+                'error': mainframe_error
+            } if mainframe_result or mainframe_error else {
+                'attempted': False,
+                'result': None,
+                'error': 'Mainframe processing disabled'
+            }
 
             return jsonify(response_data), 200
 
