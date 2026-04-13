@@ -35,9 +35,9 @@ from services.anomaly_detection import (
 # ==================== DOMAIN FIELD DEFINITIONS ====================
 
 DOMAIN_FIELDS = {
-    'banking': ['age', 'income', 'credit_score'],
-    'healthcare': ['age', 'blood_group'],
-    'ecommerce': ['price', 'stock']
+    'banking': ['age', 'income', 'credit_score'],  # loan_amount optional for cross-field validation
+    'healthcare': ['age', 'blood_group', 'heart_rate'],
+    'ecommerce': ['price', 'stock', 'rating', 'category']
 }
 
 
@@ -400,9 +400,14 @@ def validate_banking_record(record):
     Validate a single banking record.
     
     Expected fields:
-    - age: Integer between 18 and 80
-    - income: Float/Decimal greater than 0
-    - credit_score: Integer between 300 and 850
+    - age: Integer between 18-65 (legal lending age)
+    - income: Float > 0
+    - credit_score: Integer 300-900 (FICO score)
+    - loan_amount: Optional - Float > 0 (cross-field val: <= income * 5)
+    
+    Validation Rules:
+    1. Single-field validation
+    2. Cross-field validation: LOAN_AMOUNT <= INCOME * 5
     
     Future Integration:
     - Connect to DB2 to validate against regulatory compliance rules
@@ -416,7 +421,12 @@ def validate_banking_record(record):
         tuple: (is_valid: bool, errors: list of error messages)
         
     Example:
-        >>> record = {'age': 25, 'income': 50000, 'credit_score': 750}
+        >>> record = {
+        ...     'age': 30,
+        ...     'income': 50000,
+        ...     'credit_score': 750,
+        ...     'loan_amount': 200000
+        ... }
         >>> is_valid, errors = validate_banking_record(record)
         >>> is_valid
         True
@@ -428,17 +438,35 @@ def validate_banking_record(record):
         
         errors = []
         
-        # Age validation: 18-80 years (legal working age)
-        if age < 18 or age > 80:
-            errors.append(f"Invalid age {age}: Must be between 18 and 80")
+        # ===== SINGLE-FIELD VALIDATION =====
+        # Age validation: 18-65 years (legal lending age per requirements)
+        if age < 18 or age > 65:
+            errors.append(f"Invalid age {age}: Must be between 18 and 65")
         
-        # Income validation: Must be positive and reasonable
+        # Income validation: Must be positive
         if income <= 0:
             errors.append(f"Invalid income {income}: Must be greater than 0")
         
-        # Credit score validation: Standard FICO range
-        if credit_score < 300 or credit_score > 850:
-            errors.append(f"Invalid credit score {credit_score}: Must be between 300 and 850")
+        # Credit score validation: 300-900 range
+        if credit_score < 300 or credit_score > 900:
+            errors.append(f"Invalid credit score {credit_score}: Must be between 300 and 900")
+        
+        # ===== CROSS-FIELD VALIDATION =====
+        # Cross-field rule: LOAN_AMOUNT <= INCOME * 5
+        if 'loan_amount' in record:
+            try:
+                loan_amount = float(record.get('loan_amount', 0))
+                
+                if loan_amount > 0:  # Only validate if loan_amount provided
+                    if loan_amount <= 0:
+                        errors.append(f"Invalid loan_amount {loan_amount}: Must be greater than 0")
+                    elif loan_amount > income * 5:
+                        errors.append(
+                            f"Loan amount ${loan_amount:,.0f} exceeds limit (max: ${income * 5:,.0f}). "
+                            f"Rule: loan_amount <= income * 5"
+                        )
+            except (ValueError, TypeError):
+                errors.append("Invalid loan_amount: Must be numeric")
         
         return len(errors) == 0, errors
     
